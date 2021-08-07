@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkai=self.webpackChunkai||[]).push([[368],{4861:function(a){a.exports=JSON.parse('{"allTagsPath":"/ai/blog/tags","slug":"hola","name":"hola","count":1,"permalink":"/ai/blog/tags/hola"}')}}]);
