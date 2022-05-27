@@ -1,5 +1,8 @@
+---
+sidebar_position: 7 
+---
 
-# dfdfd
+# Congratulations test!
 
 You have just learned the **basics of Docusaurus** and made some changes to the **initial template**.
 

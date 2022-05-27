@@ -107,6 +107,7 @@ module.exports = {
     ],
   ],
     // JS : seach plugin
+    // installed by `yarn add @easyops-cn/docusaurus-search-local`
     plugins: [
       [
         require.resolve("@easyops-cn/docusaurus-search-local"),
