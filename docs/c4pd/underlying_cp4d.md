@@ -2,9 +2,9 @@
 sidebar_position: 1
 ---
 
-# Underlying C4PD ( Cloud Pak for Data )
+# C4PD from Db2 eyes    
 
-Exploring the openshift environment having C4PD from DB2 perspective.       
+Exploring a CP4D environment where DB2 oltp service is installed.     
 
 
 ## Getting into DB2 pod
@@ -54,11 +54,11 @@ Database 1 entry:
  Local database alias   = BLUDB
 ```
 
-## Openshift 
+## Openshift resource
 
 First of all, my test environment has 8 nodes including bastion, bootstrap node, then 3 masters and workers nodes each.   
 
-#### nodes
+### nodes
 ```
 [root@bastion ~]# oc get node
 NAME                  STATUS   ROLES    AGE     VERSION
@@ -72,7 +72,7 @@ worker03.js.ocp.adl   Ready    worker   3d19h   v1.19.14+fcff70a
 
 
 
-#### Resources    
+### Resources    
 
 ```
 [root@bastion ~]# oc get all
@@ -240,8 +240,11 @@ cronjob.batch/zen-watchdog-cronjob                */10 * * * *   False     0    
 
 NAME                           HOST/PORT                   PATH   SERVICES        PORT                   TERMINATION            WILDCARD
 route.route.openshift.io/cpd   cpd-sandy.apps.js.ocp.adl          ibm-nginx-svc   ibm-nginx-https-port   passthrough/Redirect   None
+```
 
+### deployment
 
+```
 [root@bastion ~]# kubectl get deployments.apps
 NAME                                        READY   UP-TO-DATE   AVAILABLE   AGE
 ibm-dmc-1655866151309320-admin              2/2     2            2           2d1h
@@ -265,6 +268,11 @@ zen-databases                               2/2     2            2           2d3
 zen-watchdog                                1/1     1            1           2d5h
 zen-watcher                                 1/1     1            1           2d5h
 
+```
+
+### pods
+
+```yaml
 [root@bastion ~]# oc describe pod c-db2oltp-1655862364134421-db2u-0
 Name:         c-db2oltp-1655862364134421-db2u-0
 Namespace:    sandy
@@ -564,53 +572,11 @@ Node-Selectors:  <none>
 Tolerations:     node.kubernetes.io/memory-pressure:NoSchedule op=Exists
                  node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
                  node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
-```
-
-#### API
 
 ```
-[root@bastion ~]# kubectl api-resources --api-group=db2u.databases.ibm.com 
-NAME                 SHORTNAMES   APIGROUP                 NAMESPACED   KIND
-bigsqls                           db2u.databases.ibm.com   true         BigSQL
-db2uclusters         db2u         db2u.databases.ibm.com   true         Db2uCluster
-db2uhadrs                         db2u.databases.ibm.com   true         Db2uHadr
-db2uhelmmigrations                db2u.databases.ibm.com   true         Db2uHelmMigration
-formationlocks                    db2u.databases.ibm.com   true         FormationLock
-formations                        db2u.databases.ibm.com   true         Formation
 
-[root@bastion ~]# kubectl explain db2uclusters
-KIND:     Db2uCluster
-VERSION:  db2u.databases.ibm.com/v1
 
-DESCRIPTION:
-     Db2uCluster is the API for deploying Db2. Documentation for additional
-     information check: https://ibm.biz/BdqNGJ. License By installing this
-     product you accept the license terms https://ibm.biz/BdqNGh.
-
-FIELDS:
-   apiVersion	<string>
-     APIVersion defines the versioned schema of this representation of an
-     object. Servers should convert recognized schemas to the latest internal
-     value, and may reject unrecognized values. More info:
-     https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
-
-   kind	<string>
-     Kind is a string value representing the REST resource this object
-     represents. Servers may infer this from the endpoint the client submits
-     requests to. Cannot be updated. In CamelCase. More info:
-     https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
-
-   metadata	<Object>
-     Standard object's metadata. More info:
-     https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata
-
-   spec	<Object>
-     Spec defines the desired identities of resource in this set.
-
-   status	<Object>
-     Status is the current status of resource in this Db2uClusterStatus. This
-     data may be out of date by some window of time.
-
+```yaml
 [root@bastion ~]# oc get pod c-db2oltp-1655862364134421-db2u-0 -o yaml
 apiVersion: v1
 kind: Pod
@@ -1916,6 +1882,53 @@ status:
   - ip: 121.159.0.90
   qosClass: Burstable
   startTime: "2022-06-22T01:52:03Z"
+```
+
+### API
+
+```
+[root@bastion ~]# kubectl api-resources --api-group=db2u.databases.ibm.com 
+NAME                 SHORTNAMES   APIGROUP                 NAMESPACED   KIND
+bigsqls                           db2u.databases.ibm.com   true         BigSQL
+db2uclusters         db2u         db2u.databases.ibm.com   true         Db2uCluster
+db2uhadrs                         db2u.databases.ibm.com   true         Db2uHadr
+db2uhelmmigrations                db2u.databases.ibm.com   true         Db2uHelmMigration
+formationlocks                    db2u.databases.ibm.com   true         FormationLock
+formations                        db2u.databases.ibm.com   true         Formation
+
+[root@bastion ~]# kubectl explain db2uclusters
+KIND:     Db2uCluster
+VERSION:  db2u.databases.ibm.com/v1
+
+DESCRIPTION:
+     Db2uCluster is the API for deploying Db2. Documentation for additional
+     information check: https://ibm.biz/BdqNGJ. License By installing this
+     product you accept the license terms https://ibm.biz/BdqNGh.
+
+FIELDS:
+   apiVersion	<string>
+     APIVersion defines the versioned schema of this representation of an
+     object. Servers should convert recognized schemas to the latest internal
+     value, and may reject unrecognized values. More info:
+     https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+
+   kind	<string>
+     Kind is a string value representing the REST resource this object
+     represents. Servers may infer this from the endpoint the client submits
+     requests to. Cannot be updated. In CamelCase. More info:
+     https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+
+   metadata	<Object>
+     Standard object's metadata. More info:
+     https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#metadata
+
+   spec	<Object>
+     Spec defines the desired identities of resource in this set.
+
+   status	<Object>
+     Status is the current status of resource in this Db2uClusterStatus. This
+     data may be out of date by some window of time.
+
 
 [root@bastion ~]# kubectl explain db2uclusters.spec
 KIND:     Db2uCluster
@@ -1987,8 +2000,92 @@ FIELDS:
 ```
 
 
+### Service
+```
+[root@bastion ~]# oc get svc
+NAME                                         TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)                                                                           AGE
+c-db2oltp-1655862364134421-db2u              ClusterIP   136.32.66.191    <none>        50000/TCP,50001/TCP,25000/TCP,25001/TCP,25002/TCP,25003/TCP,25004/TCP,25005/TCP   100d
+c-db2oltp-1655862364134421-db2u-engn-svc     NodePort    136.32.17.23     <none>        50000:31705/TCP,50001:30907/TCP                                                   100d
+c-db2oltp-1655862364134421-db2u-internal     ClusterIP   None             <none>        50000/TCP,9443/TCP,50052/TCP                                                      100d
+c-db2oltp-1655862364134421-etcd              ClusterIP   None             <none>        2379/TCP,2380/TCP                                                                 100d
+c-ibm-dmc-1655866151309320-redis-m           ClusterIP   None             <none>        15000/TCP,16000/TCP                                                               100d
+c-ibm-dmc-1655866151309320-redis-m-metrics   ClusterIP   None             <none>        9000/TCP                                                                          100d
+c-ibm-dmc-1655866151309320-redis-p           ClusterIP   None             <none>        16000/TCP                                                                         100d
+c-ibm-dmc-1655866151309320-redis-s           ClusterIP   None             <none>        26379/TCP,15000/TCP,9000/TCP                                                      100d
+database-core-svc                            ClusterIP   136.32.54.127    <none>        3023/TCP,3025/TCP                                                                 100d
+dsx-influxdb                                 ClusterIP   136.32.19.6      <none>        8086/TCP                                                                          100d
+ibm-dmc-1655866151309320-admin               ClusterIP   136.32.241.59    <none>        8443/TCP                                                                          100d
+ibm-dmc-1655866151309320-dbapi               ClusterIP   136.32.23.115    <none>        8443/TCP                                                                          100d
+ibm-dmc-1655866151309320-explain             ClusterIP   136.32.135.227   <none>        8443/TCP                                                                          100d
+ibm-dmc-1655866151309320-job-scheduler       ClusterIP   136.32.93.0      <none>        8443/TCP                                                                          100d
+ibm-dmc-1655866151309320-monitor             ClusterIP   136.32.81.23     <none>        8443/TCP                                                                          100d
+ibm-dmc-1655866151309320-monitor-stateful    ClusterIP   None             <none>        8443/TCP                                                                          100d
+ibm-dmc-1655866151309320-nginx               ClusterIP   136.32.62.255    <none>        8443/TCP                                                                          100d
+ibm-dmc-1655866151309320-registry-manager    ClusterIP   136.32.193.77    <none>        8443/TCP                                                                          100d
+ibm-dmc-1655866151309320-runsql              ClusterIP   136.32.155.5     <none>        8443/TCP                                                                          100d
+ibm-dmc-addon-api                            ClusterIP   136.32.217.234   <none>        5555/TCP,4444/TCP                                                                 100d
+ibm-dmc-addon-ui                             ClusterIP   136.32.110.49    <none>        8080/TCP,8443/TCP                                                                 100d
+ibm-nginx-svc                                ClusterIP   136.32.110.121   <none>        443/TCP                                                                           100d
+ibm-nginx-tester-svc                         ClusterIP   136.32.37.143    <none>        443/TCP                                                                           99d
+internal-nginx-svc                           ClusterIP   136.32.33.28     <none>        12443/TCP,12080/TCP                                                               100d
+usermgmt-svc                                 ClusterIP   136.32.189.87    <none>        8080/TCP,3443/TCP                                                                 100d
+volumes-vol1-svc                             ClusterIP   136.32.78.62     <none>        3333/TCP,4444/TCP                                                                 15d
+zen-audit-svc                                ClusterIP   136.32.43.16     <none>        9880/TCP,9890/TCP,5140/TCP                                                        100d
+zen-core-api-svc                             ClusterIP   136.32.185.95    <none>        3333/TCP,4444/TCP                                                                 100d
+zen-core-svc                                 ClusterIP   136.32.219.108   <none>        3003/TCP,3443/TCP                                                                 100d
+zen-data-sorcerer-svc                        ClusterIP   136.32.210.67    <none>        2222/TCP                                                                          100d
+zen-databases-svc                            ClusterIP   136.32.88.250    <none>        3004/TCP                                                                          100d
+zen-metastoredb                              ClusterIP   None             <none>        26257/TCP,8080/TCP                                                                15d
+zen-metastoredb-public                       ClusterIP   136.32.116.49    <none>        26257/TCP,8080/TCP                                                                15d
+zen-watchdog-svc                             ClusterIP   136.32.24.194    <none>        3333/TCP,4444/TCP                                                                 100d
 
 
+[root@bastion ~]# oc describe svc c-db2oltp-1655862364134421-db2u
+Name:              c-db2oltp-1655862364134421-db2u
+Namespace:         sandy
+Labels:            formation_id=db2oltp-1655862364134421
+Annotations:       <none>
+Selector:          app=db2oltp-1655862364134421,component=db2oltp,formation_id=db2oltp-1655862364134421,role=db,type=engine
+Type:              ClusterIP
+IP:                136.32.66.191
+Port:              db2-server  50000/TCP
+TargetPort:        50000/TCP
+Endpoints:         121.157.2.3:50000
+Port:              db2-ssl-server  50001/TCP
+TargetPort:        50001/TCP
+Endpoints:         121.157.2.3:50001
+Port:              spark-p25000  25000/TCP
+TargetPort:        25000/TCP
+Endpoints:         121.157.2.3:25000
+Port:              spark-p25001  25001/TCP
+TargetPort:        25001/TCP
+Endpoints:         121.157.2.3:25001
+Port:              spark-p25002  25002/TCP
+TargetPort:        25002/TCP
+Endpoints:         121.157.2.3:25002
+Port:              spark-p25003  25003/TCP
+TargetPort:        25003/TCP
+Endpoints:         121.157.2.3:25003
+Port:              spark-p25004  25004/TCP
+TargetPort:        25004/TCP
+Endpoints:         121.157.2.3:25004
+Port:              spark-p25005  25005/TCP
+TargetPort:        25005/TCP
+Endpoints:         121.157.2.3:25005
+Session Affinity:  None
+Events:            <none>
+
+```
+
+### DNS   
+
+```
+[root@bastion ~]# kubectl exec -it c-db2oltp-1655862364134421-db2u-0 cat /etc/resolv.conf
+kubectl exec [POD] [COMMAND] is DEPRECATED and will be removed in a future version. Use kubectl exec [POD] -- [COMMAND] instead.
+search sandy.svc.cluster.local svc.cluster.local cluster.local js.ocp.adl
+nameserver 136.32.0.10
+options ndots:2
+```
 
 
 ### MISC  
