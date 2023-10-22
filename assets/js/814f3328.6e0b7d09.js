@@ -1,1 +1,0 @@
-"use strict";(self.webpackChunkai=self.webpackChunkai||[]).push([[535],{5641:function(e){e.exports=JSON.parse('{"title":"Recent posts","items":[{"title":"Welcome","permalink":"/ai/blog/welcome"},{"title":"Hello","permalink":"/ai/blog/hello-world"},{"title":"Hola","permalink":"/ai/blog/hola"}]}')}}]);
